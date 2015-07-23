@@ -12,7 +12,7 @@ public class Main{
 		String file;
 		ArrayList<String> sentences = new ArrayList<String>();
 		for (int i = 1; i < 5; i++){
-		file = "/Users/Lorin/Downloads/projectdata/20newsgroups/"+i+".train";
+		file = args[0] +i+".train";
 		parser.parse(file,i);
 		}
 		HashMap<Integer, ArrayList<String>> messages = parser.getMessages();
