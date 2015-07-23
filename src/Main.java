@@ -8,6 +8,7 @@ public class Main{
 
 	public static void main(String[] args){
 		
+		int NUM_OF_FILES = 4;
 		Parser parser = new Parser();
 		String file;
 		ArrayList<String> sentences = new ArrayList<String>();
@@ -17,7 +18,7 @@ public class Main{
 		}
 		HashMap<Integer, ArrayList<String>> messages = parser.getMessages();
 		Dictionary dict = new Dictionary();
-		for (int i = 1; i < 5; i++){
+		for (int i = 1; i < NUM_OF_FILES; i++){
 			
 			// All the messages related to the i'th forum
 			sentences = messages.get(i);
