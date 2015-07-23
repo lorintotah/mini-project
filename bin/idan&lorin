@@ -1,0 +1,82 @@
+label  - 
+מזהה פורום.
+training set -
+״מדגם אימון״ , קבוצת ההודעות שלכל אחת מוצמדת התווית האמיתית שלה.
+
+feature -
+כל הודעה מוצגת על ידי וקטור של ערכים מספריים
+
+information gain -
+שיפור האינפורמציה, מדד שמודד את שינוי באנתרופיה של העץ (=מספר המודד את מידת אי הוודאות בשיוך הודעה לפורום על פי העץ הנוכחי).
+
+לכל עלה, נחשב אנתרופיה כך - 
+מספר ההודעות במדגם האימון שמתאימות לעלה זה N(L). כלומר - מספר ההודעות שמתאימות לתנאים במסלול שמוביל אל העלה.
+מתוך הודעות אלו, נסמן ב- Ni(L) את מספר ההודעות שהתוית עליהן היא i.
+￼
+
+אלגוריתם:
+
+עלה צריך להחזיק בתוכו את רשימת ההודעות שמתאימות לתנאים במסלול שמוביל אליו.
+Node L = (Messages + label, left, right, H(L) - entropy)
+ לכל עלה נחשב (?) Ni(L) לכל i. (= כמה הודעות מתוך ההודעות ששיכות לעלה שיכות לindex i).
+
+* פונקציה שבוחרת איזה עלה עלינו לפצל. (= תיאור…)
+* חישוב המילה שבה נבחר לפצל(?)
+* פונקצית פיצול עלה - לאב ושני עלים. ( = כילד ׳ימין׳ נחשב שהמילה אכן במסלול - N(La) וילד ׳שמאל׳ ההודעות אפשר המילה לא נמצאת בהם N(Lb)
+
+נחשב
+ ￼
+
+עבור הקודקוד החדש X
+H(L) נשים לב כי זה תמיד יהיה קטן יותר מ.
+
+בכל סיבוב נבחר את X ו L שעבורם N(L) * IG(X,L)  
+מקסימלי
+
+we will get as parameters - 
+1. path to directory
+2. test file name
+3. P
+4. L
+5. output file name
+
+
+ ** How to find the right T **
+For (i = 1 to L)
+	{
+	for ( j = 1 to NUMBER-OF-INPUT-FILES)
+		Choose P% Random messages for LABEL j
+		Mark them as VALID-SET
+		SPLIT (?) into 2 sets - 1) TRAINING SET . 2) VALID-SET
+	
+	T = 2 ^ i ;
+		CREATE Decision TREE WITH T “Loops”
+		Check success ratio - RUN The valid-set on the DTree - and calculate the precent of messages that match.
+		Save index of T with the success ratio 
+
+ - search for the MAX success ratio with the current VALID-SET - THIS IS THE T WE WILL USE! 
+
+
+** Build a Decision tree ** 
+
+First node - the most common Forum . H(L)=0 
+for (i = 1 to T)
+	** How to choose wordX
+	** for each wordX in the node calculate H(x) 
+
+SplitTheNode(Lnode, wordX)
+	father is Lnode - update right and left child
+						==>make right child , left child
+	father value = word.  N(L)
+	right child = N(La) - all the messages from Lnode that contain the wordX
+	left child = N(Lb) - the messages without the wordX.
+
+CalculateEntropy(father)
+ ￼
+
+split the node for each wordX and choose max { N(L)  * IG(Xi,L) } 
+￼
+כלומר מי העץ שיקטין את החוסר וודאות שלנו.
+
+
+	 
