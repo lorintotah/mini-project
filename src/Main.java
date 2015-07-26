@@ -8,7 +8,7 @@ public class Main{
 
 	public static void main(String[] args){
 		
-		int NUM_OF_FILES = 4;
+		final int NUM_OF_FILES = 4;
 		Parser parser = new Parser();
 		String file;
 		ArrayList<String> sentences = new ArrayList<String>();
@@ -36,9 +36,29 @@ public class Main{
 				messages.get(i).get(j).toLowerCase();
 			}
 		}
-		Matrix m = new Matrix();
+		Messages m = new Messages();
 		m.updateMatrix(messages, dict);
+		int max = 0 ;
+		int index = 0;
+		for (int i = 0; i < NUM_OF_FILES; i++) {
+			if ( m.getMatrix().get(0)._indexes.size() >  max)
+			{
+				max = m.getMatrix().get(0)._indexes.size();
+				index = i;
+			}
+		}
+		System.out.println("LORIN" + index);
 	}
 
+	private void findTheRightT(int L,int P,int NUM_OF_FILES){
+		for (int i = 0; i < L; i++) {
+			int T = 2^i;
+			DecisionTree tmp = new DecisionTree(T,NUM_OF_FILES);
+			tmp.start(Dict, matrix);
+				
+			}
+			
+		}
+	}
 
 }
