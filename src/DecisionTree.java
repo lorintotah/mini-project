@@ -28,7 +28,7 @@ public class DecisionTree {
 			for (int j = 0; j < NUMBER_OF_FILES; j++){
 			// choose P% random Messages from TRAINING_SET to VALID_SET
 			}
-			
+			//idan
 		}
 	
 }
