@@ -1,4 +1,3 @@
-
 import java.util.*;
 
 
@@ -6,15 +5,15 @@ import java.util.*;
 public class Node {
 	public Node leftChild;
 	public Node rightChild;
-	private ArrayList<Pair> messages;  // array list with the numbers of messages in him
-	private ArrayList<String> Attributes;
+	private HashMap<Integer,ArrayList<LinkedHashSet<Integer>>> messages;  // array list with the numbers of messages in him
+	private ArrayList<Integer> Attributes;
 	private double entropy; // h(x)
 	private boolean isLeaf; //
 	private String name;
 
 	public Node() {
-		this.messages = new ArrayList<Pair>();
-		Attributes = new ArrayList<String>();
+		this.messages = new HashMap<Integer,ArrayList<LinkedHashSet<Integer>>> ();
+		Attributes = new ArrayList<Integer>();
 		this.name = "";
 		setEntropy(0.0);
 		setLeftChild(null);
@@ -22,7 +21,7 @@ public class Node {
 		setLeaf(false);
 	}
 
-	public Node(ArrayList<String> Att,ArrayList<Pair> msg) {
+	public Node(ArrayList<Integer> Att,HashMap<Integer,ArrayList<LinkedHashSet<Integer>>> msg) {
 		this.messages =msg;
 		Attributes = Att;
 		this.name = "";
@@ -32,15 +31,27 @@ public class Node {
 		setLeaf(false);
 	}
 
-	public int NLa(int attr){
-		int countWithAttr = 0;
+	public void SplitMessages(int attr,ArrayList<Pair> messagesWith,ArrayList<Pair> messagesWithOut){
 		for (int i = 0; i<messages.size(); i++){
 			if (messages.get(i)._indexes.contains(attr))
-				countWithAttr++;
+				messagesWith.add(messages.get(i));
+			else
+				messagesWithOut.add(messages.get(i));
 		}
-		return countWithAttr;
 	}
 
+	public void REGA(int attr){
+		ArrayList<Pair> messagesWith = new ArrayList<Pair>();
+		ArrayList<Pair> messagesWithOut = new ArrayList<Pair>();
+		SplitMessages(attr,messagesWith,messagesWithOut);
+		
+		// Calculate Ni(L) for each i
+		int NiL = 0;
+		for (int i = 0; i < messagesWith.size(); i++) {
+			messagesWith.get(i).
+		}
+		
+	}
 	public int NiL(int i){
 		int count = 0;
 		for (int j = 0; j<messages.size(); j++){
@@ -49,7 +60,18 @@ public class Node {
 		}
 		return count;
 	}
-	
+
+	public int NiLa(int i, int attr){
+		int count = 0;
+		for (int j = 0; j<messages.size(); j++ ){
+			if (messages.get(j)._indexes.contains(attr)){
+				if (messages.get(j)._label == i)
+					count++;
+			}
+		}
+		return count;
+	}
+
 	public int NL(){
 		return messages.size();
 	}
@@ -62,9 +84,21 @@ public class Node {
 		return entropy;
 
 	}
+	public double calculateEntropyForNode(int attr){	
+		double entropy = 0;
+		int nla = this.NLa(attr);
+		int nlb = this.NL() - nla;
+		int hla = 0;
+		for (int i=1; i<5; i++){
+			
+		}
+		
+		entropy = ((nla/this.NL())* rightChild.calculateEntropyForLeaf())/
+				((nlb/this.NL())* leftChild.calculateEntropyForLeaf());
+		return entropy;
+	}
 
-
-	public double calculateInformationGain(Matrix m){
+	public double calculateInformationGain(int attr){
 
 		return -1;
 
@@ -112,4 +146,3 @@ public class Node {
 
 
 }
-
