@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.TreeSet;
@@ -9,7 +10,7 @@ public class DecisionTree {
 	private int NUMBER_OF_FILES;
 	private Messages TRAINING_SET;
 	private int T;
-	private TreeSet<Pair> nodes;
+	private TreeSet<Pair> nodes = new TreeSet<Pair>();
 
 	public DecisionTree(int NUMBER_OF_FILES,int T,Messages TRAINING_SET,TreeSet<Pair> nodes){
 		this.root = new Node();
@@ -18,11 +19,12 @@ public class DecisionTree {
 		this.TRAINING_SET = TRAINING_SET;
 		this.nodes = nodes;
 	}
-	
+
+
 	public void setRoot(Node root){
 		this.root = root;
 	}
-	
+
 	public Node getRoot(){
 		return this.root;
 	}
@@ -37,46 +39,36 @@ public class DecisionTree {
 	//	this.setNL(0);
 	//	this.x = 0;
 
-	public DecisionTree()
-	{
-		
-	}
-	public void deepCopy(DecisionTree old)
-	{
-			
-	        Node left = root.getLeftChild();
-	        Node right = root.getRightChild();
-	       
-	        if (left != null)
-	        {
-	            copy.setLeftChild(new Node(left));
-	            deepCopy(left, copy.getLeftChild());
-	        }
-	       
-	        if (right != null)
-	        {
-	            copy.setRightChild(new Node(right));
-	            deepCopy(right, copy.getRightChild());
-	        }
-	}
-	
-	
+
 	public DecisionTree(DecisionTree tree,int T) {
-		root = new Node(tree.root.getAttr(),tree.root.getMessages());
-		Node tmp = root;
-		Node tmp2 = tree.root;
-		while (!tmp.isLeaf()){
-
-			tmp.setLeftChild(tmp2.leftChild);
-			tmp.setRightChild(tmp2.getRightChild());
-
-		}
-		this.root = tree.root;
-		this.NUMBER_OF_FILES = tree.NUMBER_OF_FILES;
+		this.root = new Node(tree.root);
+		copy(this.root , tree.root);
 		this.T = T;
+		this.NUMBER_OF_FILES = tree.NUMBER_OF_FILES;
 		this.TRAINING_SET = tree.TRAINING_SET;
-		this.nodes = tree.nodes;
+		this.nodes = new TreeSet<Pair>(new MyComp());
+		System.out.println(nodes);
+		for (Pair n : tree.nodes) {
+			System.out.println("A");
+			this.nodes.add(new Pair(n));
+			System.out.println(nodes);
+		}
 	}
+
+	public void copy (Node dest,Node source)
+	{
+	  if(source.getLeftChild() != null)
+	  {
+	     dest.setLeftChild(new Node(source.leftChild));
+	     copy(source.leftChild, dest.leftChild );
+	  }
+	  if(source.getRightChild() != null)
+	  {
+	     dest.setRightChild(new Node(source.rightChild));
+	     copy(source.rightChild, dest.rightChild );
+	  }
+	}
+
 
 
 	public DecisionTree start(Dictionary Dict,Messages TRAINING_SET){
@@ -86,18 +78,17 @@ public class DecisionTree {
 		}
 		root = new Node(allDictWords,TRAINING_SET);
 		root.setLeaf(true);
-		nodes.add(new Pair(root,0));
-
+		getNodes().add(new Pair(root,0));
 		return routines();
 
 	}
 
 	public DecisionTree routines() {
 		for (int k = 0; k < T; k++) {
-			Node checkNode = nodes.last().getNode();
-			nodes.pollLast();
+			Node checkNode = getNodes().last().getNode();
+			getNodes().pollLast();
 			System.out.println(checkNode);
-			splitByWord(checkNode.getIndex(),checkNode);
+			splitByWord(checkNode.getX(),checkNode);
 		}
 		return this;
 	}
@@ -121,15 +112,15 @@ public class DecisionTree {
 		checkNode.setLeftChild(LeftNode);
 		checkNode.setRightChild(RightNode);
 
-		System.out.println(nodes.size());
-		nodes.add(new Pair(LeftNode,igL));
-		nodes.add(new Pair(RightNode,igR));
+		System.out.println(getNodes().size());
+		getNodes().add(new Pair(LeftNode,igL));
+		getNodes().add(new Pair(RightNode,igR));
 	}
 
 	public int checkWhichForum(LinkedHashSet<Integer> sentence){
 		Node checkIt = root;
 		while (checkIt.isLeaf() == false)
-			if ( sentence.contains(checkIt.getName()) )
+			if ( sentence.contains(checkIt.getX()) )
 				checkIt = checkIt.rightChild;
 			else
 				checkIt = checkIt.leftChild;
@@ -137,6 +128,14 @@ public class DecisionTree {
 		checkIt.chooseForum();
 		return checkIt.getName();
 
+	}
+
+	public TreeSet<Pair> getNodes() {
+		return nodes;
+	}
+
+	public void setNodes(TreeSet<Pair> nodes) {
+		this.nodes = nodes;
 	}
 
 }

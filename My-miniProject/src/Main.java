@@ -60,34 +60,35 @@ public class Main{
 
 		Messages m = new Messages();
 		m.updateMatrix(TRAINING_SET, dict);
-		//		m.print();
-
+		
 		TreeSet<Pair> nodes = new TreeSet<Pair>(new MyComp());
+		
+		//first Tree - 1 split
 		DecisionTree Tree = new DecisionTree(4,1,m,nodes);
-
+		
+		//the trees array
 		ArrayList<DecisionTree> Trees = new ArrayList<DecisionTree>();
-		DecisionTree TreeFIRST = new DecisionTree();
-		TreeFIRST.deepCopy(Tree.getRoot(), TreeFIRST.getRoot());
-		Trees.add(TreeFIRST);
+		Trees.add(Tree.start(dict, m));
 
-		int L = 2;
+		int L = 3;
 
 		for (int t = (int) Math.pow(2, 0); t < Math.pow(2, L); t *= 2) {
-			DecisionTree newTree = new DecisionTree();
-			newTree.deepCopy(Tree.getRoot(), newTree.getRoot());
-			newTree.routines();
+			System.out.println("t 1  " +t);
+			DecisionTree newTree = new DecisionTree(Tree, t);
+			newTree.routines();			
 			Trees.add(newTree);
+			System.out.println("t/2/   " +t);
+
+			Tree = newTree;
+
+			System.out.println("t 3  " +t);
 
 		}
 		dict.getDictionary().size();
 		Messages validMSG = new Messages();
 		validMSG.updateMatrix(VALID_SET, dict);
-		for (int i = 1; i <= validMSG.getMatrix().size(); i++) {
-			System.out.println("THE SIZE OF VALID MSG " +validMSG.getMatrix().get(i).size());
-				
-		}
-		
-		
+
+			
 	//	System.out.println("A");
 		ArrayList<ArrayList<Integer>> answers = new ArrayList<ArrayList<Integer>>();
 		for (int i = 0; i < Trees.size(); i++) {
@@ -100,17 +101,18 @@ public class Main{
 				//	System.out.println("C");
 
 					arr.add(Trees.get(i).checkWhichForum(validMSG.getMatrix().get(j).get(t)));
-					System.out.println(arr);
 //					System.out.println("D");
 
 				}
-				answers.add(arr);
 			}
+			answers.add(arr);
 
 		}
-	for (int i = 0; i < answers.size(); i++) {
+	
+		for (int i = 0; i < answers.size(); i++) {
 			System.out.println(answers.get(i).toString());
 		}
+
 
 	}
 	
