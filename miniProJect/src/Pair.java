@@ -12,6 +12,7 @@ public class Pair {
 		this.node = new Node(n.getNode());
 		this.ig = n.getIg();
 	}
+	
 	public double getIg() {
 		return ig;
 	}

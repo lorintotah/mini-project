@@ -14,8 +14,37 @@ public class Node {
 	private int NL;
 	private int x;
 	private double Hx;
+	private double informationGain;
 
+	public Node(Node oldNode,TreeSet<Node> nodes) {
+		this.messages = new Messages();
+		for (int i = 1; i <= oldNode.messages.getMatrix().size(); i++) {
+			this.messages.getMatrix().put(i, new ArrayList<LinkedHashSet<Integer>>());
+			for (int j = 0; j < oldNode.messages.getMatrix().get(i).size(); j++) 
+				this.messages.getMatrix().get(i).add(oldNode.messages.getMatrix().get(i).get(j));
+		}
+		this.Attributes = new ArrayList<Integer>();
+		for (int i = 0; i < oldNode.Attributes.size(); i++)
+			this.Attributes.add(oldNode.Attributes.get(i));
+		this.name = oldNode.name;
+		this.entropy = oldNode.entropy;
+		this.isLeaf = oldNode.isLeaf; // ?? is it good ?
+		this.NL = oldNode.NL;
+		this.x = oldNode.x;
+		this.informationGain = oldNode.informationGain;
+		if (oldNode.isLeaf == true)
+			nodes.add(this);
+		if (oldNode.leftChild != null)
+			this.leftChild = new Node(oldNode.leftChild,nodes);
+		else
+			setLeftChild(null);
+		if (oldNode.rightChild != null)
+			this.rightChild = new Node(oldNode.rightChild,nodes);
+		else
+			setRightChild(null);
+	}
 
+	
 	public Node(ArrayList<Integer> Att,Messages msg) {
 		this.messages = new Messages();
 		for (int i = 1; i <= msg.getMatrix().size(); i++) {
@@ -30,38 +59,10 @@ public class Node {
 		setRightChild(null);
 		setLeaf(true);
 		calculateEntropyForLeaf();
-		System.out.println(" THE ENTROPU FOR THE NODE IS :" +entropy);
 		this.setNL(messages.sumAllMessages());
-		//System.out.println(NL + "NL");
 		calculateWhichXIsBest();
 	}
 
-
-	public Node(Node oldNode) {
-		this.messages = new Messages();
-		for (int i = 1; i <= oldNode.messages.getMatrix().size(); i++) {
-			this.messages.getMatrix().put(i, new ArrayList<LinkedHashSet<Integer>>());
-			for (int j = 0; j < oldNode.messages.getMatrix().get(i).size(); j++) {
-				this.messages.getMatrix().get(i).add(oldNode.messages.getMatrix().get(i).get(j));
-			}
-		}
-		if (messages.size() == 0)
-			System.out.println("PANICCCCCCC!@!@#!@#!@#");
-
-		this.Attributes = new ArrayList<Integer>();
-		for (int i = 0; i < oldNode.Attributes.size(); i++) {
-			this.Attributes.add(oldNode.Attributes.get(i));
-		}
-		this.name = oldNode.name;
-		this.entropy = oldNode.entropy;
-		setLeftChild(null);
-		setRightChild(null);
-		this.isLeaf = oldNode.isLeaf;
-		this.NL = oldNode.NL;
-		this.x = oldNode.x;
-		this.Hx = oldNode.Hx;
-		}
-	
 
 	public ArrayList<Integer> getAttr(){
 		return Attributes;
@@ -71,7 +72,7 @@ public class Node {
 		int count = 0;
 		int index = 0;
 
-		for (int i = 1; i <= this.messages.size(); i++) {
+		for (int i = 1; i <= this.messages.getMatrix().size(); i++) {
 			if (messages.getMatrix().get(i).size()>count)
 			{
 				index = i;
@@ -81,12 +82,12 @@ public class Node {
 
 		this.setName(index);
 	}
+	
 	public Messages getMessages(){
 		return messages;
 	}
 
 	private void calculateWhichXIsBest() {
-		int index = 0;
 		ArrayList<Double> HxArray = new ArrayList<Double>();
 
 		for (int i = 0; i < this.getAttr().size(); i++) {
@@ -114,10 +115,11 @@ public class Node {
 			for (int j = 1; j <= messagesWithOut.getMatrix().size(); j++) {
 				NiWithOut = messagesWithOut.getMatrix().get(j).size();
 				NiCountWithOut += NiWithOut;
-
 				if (NiWithOut != 0)
 					HLb += (NiWithOut / this.getNL()) * (Math.log(this.getNL()) -Math.log(NiWithOut));
 			}
+			
+			
 			double Hx = 0;
 			Hx = (NiCountWith / this.getNL()) * HLa + (NiCountWithOut / this.getNL() ) * HLb;	
 			HxArray.add(Hx);
@@ -125,14 +127,15 @@ public class Node {
 
 		}
 		double min = HxArray.get(0);
-		for (int j = 0; j < HxArray.size(); j++) {
+	
+		int index = 1;
+		for (int j = 2; j < HxArray.size(); j++) {
 			if (HxArray.get(j) < min ){
 				min = HxArray.get(j);
 				index = j;
 			}
 		}
 		this.x = index;
-	//	System.out.println("x ---->" +x);
 		this.setHx(min);
 		System.out.println("The x for the split is: " +x);
 	}
@@ -240,6 +243,28 @@ public class Node {
 	public int getX() {
 		return this.x;
 	}
+
+	  public void print() {
+	        print("", true);
+	    }
+
+	    private void print(String prefix, boolean isTail) {
+	        System.out.println(prefix + (isTail ? "└── " : "├── ") + x);
+	     if (!isLeaf){
+	            leftChild.print(prefix + (isTail ? "    " : "│   "), false);
+	            rightChild.print(prefix + (isTail ? "    " : "│   "), false);
+	     }
+	   
+	    }
+
+		public void setInformationGain(double ig) {
+			this.informationGain = ig;
+		}
+
+		public double getInformationGain() {
+			return informationGain;
+		}
+
 
 
 }

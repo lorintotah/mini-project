@@ -1,11 +1,11 @@
 import java.util.Comparator;
 
 
-public class MyComp implements Comparator<Pair> {
+public class MyComp implements Comparator<Node> {
 
     @Override
-    public int compare(Pair e1, Pair e2) {
-        if(e1.getIg() > e2.getIg()){
+    public int compare(Node e1, Node e2) {
+        if(e1.getInformationGain() > e2.getInformationGain()){
             return 1;
         } else {
             return -1;

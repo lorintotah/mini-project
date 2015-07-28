@@ -28,19 +28,20 @@ public class Messages {
 		return _workingSet;
 	}
 
-//	public void insert(int i,int index){
-//		_workingSet.get(i).get(index);
-//	}
-//
-//	public LinkedHashSet<Integer> getSet(int index){
-//		return _workingSet.get(index)._indexes;
-//	}
+	//	public void insert(int i,int index){
+	//		_workingSet.get(i).get(index);
+	//	}
+	//
+	//	public LinkedHashSet<Integer> getSet(int index){
+	//		return _workingSet.get(index)._indexes;
+	//	}
 
-	
+
 	public int size(){
 		return _workingSet.size();
 	}
 	public void updateMatrix(HashMap<Integer, ArrayList<String>> messages, Dictionary dict){
+		int index;
 		for (int i: messages.keySet()){
 			_workingSet.put(i, new ArrayList<LinkedHashSet<Integer>>());
 			for (int j = 0;j < messages.get(i).size(); j++){
@@ -48,30 +49,31 @@ public class Messages {
 				LinkedHashSet<Integer> temp = new LinkedHashSet<>();
 				// For every word in the message find the corresponding entry in the dictionary 
 				for (int k=0; k < curr.length; k++){
-					int index = dict.getDictionary().indexOf(curr[k]); // Index of the corresponding entry in the dictionary 
-					// for the current word
-					temp.add(index);
+					if (dict.getDictionary().indexOf(curr[k]) != -1){
+						index = dict.getDictionary().indexOf(curr[k]); // Index of the corresponding entry in the dictionary 
+						// for the current word
+						temp.add(index);}
 				}
-					_workingSet.get(i).add(temp);
+				_workingSet.get(i).add(temp);
 			}
 		}
 	}
 
-	
+
 
 
 	public int sumAllMessages(){
 		int count = 0;
 		for (int i = 1; i <= _workingSet.size(); i++) 
 		{
-				count += _workingSet.get(i).size();
+			count += _workingSet.get(i).size();
 
 
 		}
 
 		return count;
 	}
-	
+
 	public void print(){
 		for (int j = 1; j <=
 				_workingSet.size(); j++) {

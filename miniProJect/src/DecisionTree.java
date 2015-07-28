@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.TreeSet;
 
@@ -11,26 +10,40 @@ public class DecisionTree {
 	private int NUMBER_OF_FILES;
 	private Messages TRAINING_SET;
 	private int T;
-	private TreeSet<Pair> nodes = new TreeSet<Pair>();
+	private TreeSet<Node> nodes = new TreeSet<Node>(new MyComp());
 
-	public DecisionTree(int NUMBER_OF_FILES,int T,Messages TRAINING_SET,TreeSet<Pair> nodes){
+	public DecisionTree(int NUMBER_OF_FILES,int T,Messages TRAINING_SET,TreeSet<Node> nodes){
 		this.NUMBER_OF_FILES = NUMBER_OF_FILES;
 		this.T = T;
 		this.TRAINING_SET = TRAINING_SET;
 		this.nodes = nodes;
-		
+
+	}
+
+	public DecisionTree(DecisionTree old){
+		this.NUMBER_OF_FILES = old.NUMBER_OF_FILES;
+		this.T = old.T;
+		this.TRAINING_SET = new Messages();
+		// We want to deep copy each element in TRAINING_SET
+		for (int i = 1; i <= old.TRAINING_SET.getMatrix().size(); i++) {
+			this.TRAINING_SET.getMatrix().put(i, new ArrayList<LinkedHashSet<Integer>>());
+			for (int j = 0; j < old.TRAINING_SET.getMatrix().get(i).size(); j++)
+				this.TRAINING_SET.getMatrix().get(i).add(old.TRAINING_SET.getMatrix().get(i).get(j));
+		}
+		this.nodes = new TreeSet<Node>(new MyComp());
+// TODO: copy deep nodes
+		this.root = new Node(old.root,nodes);
 	}
 
 	public DecisionTree start(Dictionary Dict){
-
 		ArrayList <Integer> allDictWords = new ArrayList<Integer>();
 		for (int i = 0; i < Dict.getDictionary().size(); i++) {
 			allDictWords.add(i);
 		}
-		
+
 		root = new Node(allDictWords,TRAINING_SET);
-		root.setLeaf(true);
-		getNodes().add(new Pair(root,0));
+		//root.setLeaf(true);
+		getNodes().add(root);
 		return routines();
 	}
 	public void setRoot(Node root){
@@ -41,71 +54,57 @@ public class DecisionTree {
 		return this.root;
 	}
 
-
-	public DecisionTree(DecisionTree tree,int T) {
-		this.root = new Node(tree.root);
-		copy(this.root , tree.root);
-		this.T = T;
-		this.NUMBER_OF_FILES = tree.NUMBER_OF_FILES;
-		this.TRAINING_SET = tree.TRAINING_SET;
-		this.nodes = new TreeSet<Pair>(new MyComp());
-		for (Pair n : tree.nodes) {
-		//	System.out.println("A");
-			this.nodes.add(new Pair(n));
-			//System.out.println(nodes);
-		}
-	}
-
-	public void copy (Node dest,Node source)
-	{
-	  if(source.getLeftChild() != null)
-	  {
-	     dest.setLeftChild(new Node(source.leftChild));
-	     copy(source.leftChild, dest.leftChild );
-	  }
-	  if(source.getRightChild() != null)
-	  {
-	     dest.setRightChild(new Node(source.rightChild));
-	     copy(source.rightChild, dest.rightChild );
-	  }
-	}
-
 	public DecisionTree routines() {
 		for (int k = 0; k < T; k++) {
-			Node checkNode = getNodes().pollLast().getNode();
-			System.out.println(checkNode.getX() + " The choosen node");
-			splitByWord(checkNode);
+			Node checkNode = null;
+			if (!getNodes().isEmpty())
+			{
+				checkNode = getNodes().pollLast();
+			}
+			if (checkNode != null){
+				splitByWord(checkNode);	
+			}
+			else 
+				return this;
+
 		}
 		return this;
 	}
 
 	private void splitByWord(Node checkNode) {
+
 		Messages messagesWith = new Messages();
 		Messages messagesWithOut = new Messages();
 
-
 		checkNode.setLeaf(false);
 		checkNode.NLa(checkNode.getX(),messagesWith, messagesWithOut);
-		
+
 		ArrayList<Integer> AttrWithOutX = new ArrayList<Integer>();
 		for (Integer i : checkNode.getAttr()){
 			if (i != checkNode.getX())
 				AttrWithOutX.add(i);
 		}
-		
+
 		Node LeftNode = new Node(AttrWithOutX,messagesWithOut);
 		Node RightNode = new Node(AttrWithOutX,messagesWith);
 
 		double igL = (LeftNode.getEntropy() - LeftNode.getHx()) * LeftNode.getNL();
 		double igR = (RightNode.getEntropy() - RightNode.getHx()) * RightNode.getNL();
-
+	
+		LeftNode.setInformationGain(igL);
+		RightNode.setInformationGain(igR);
 
 		checkNode.setLeftChild(LeftNode);
 		checkNode.setRightChild(RightNode);
 
+		if (igL != 0) {
+			getNodes().add(new Node(LeftNode,new TreeSet<Node>(new MyComp())));
+		}
+		if (igR != 0) {
+			getNodes().add(new Node(RightNode,new TreeSet<Node>(new MyComp())));
+		}
 		//System.out.println(getNodes().size());
-		getNodes().add(new Pair(LeftNode,igL));
-		getNodes().add(new Pair(RightNode,igR));
+
 		System.out.println("Infor gain Left " +igL);
 
 		System.out.println("Infor gain Right " +igR);
@@ -124,13 +123,18 @@ public class DecisionTree {
 
 	}
 
-	public TreeSet<Pair> getNodes() {
+	public TreeSet<Node> getNodes() {
 		return nodes;
 	}
 
-	public void setNodes(TreeSet<Pair> nodes) {
+	public void setNodes(TreeSet<Node> nodes) {
 		this.nodes = nodes;
 	}
 
+	public void setTandStart(int t2) {
+		this.T = t2;
+		this.routines();
+
+	}
 }
 
