@@ -44,7 +44,7 @@ public class Node {
 			setRightChild(null);
 	}
 
-	
+
 	public Node(ArrayList<Integer> Att,Messages msg) {
 		this.messages = new Messages();
 		for (int i = 1; i <= msg.getMatrix().size(); i++) {
@@ -79,10 +79,10 @@ public class Node {
 				count  = messages.getMatrix().get(i).size();
 			}
 		}
-
 		this.setName(index);
+
 	}
-	
+
 	public Messages getMessages(){
 		return messages;
 	}
@@ -91,45 +91,52 @@ public class Node {
 		ArrayList<Double> HxArray = new ArrayList<Double>();
 
 		for (int i = 0; i < this.getAttr().size(); i++) {
+
 			Messages messagesWith = new Messages();
 			Messages messagesWithOut = new Messages();
-			this.NLa(i,messagesWith, messagesWithOut);
-			
-			double HLa = 0; //with
-			double HLb = 0; //without
+			this.NLa(this.getAttr().get(i),messagesWith, messagesWithOut);
 
-			double NiWith = 0;
-			double NiWithOut = 0;
-			
-			double NiCountWith =0;
-			double NiCountWithOut = 0;
-			// CALCULATE H(La) - messagesWith
+			if (messagesWith.size()!=0 || messagesWithOut.size()!=0 )
+			{
+				double HLa = 0; //with
+				double HLb = 0; //without
 
-			for (int j = 1; j <= messagesWith.getMatrix().size(); j++) {
-				NiWith = messagesWith.getMatrix().get(j).size();
-				NiCountWith += NiWith;
-				if (NiWith != 0 )
-					HLa +=  (NiWith / this.getNL()) * ( Math.log(this.getNL()) - Math.log(NiWith) );
+				double NiWith = 0;
+				double NiWithOut = 0;
+
+				double NiCountWith =0;
+				double NiCountWithOut = 0;
+				// CALCULATE H(La) - messagesWith
+
+				for (int j = 1; j <= messagesWith.getMatrix().size(); j++) {
+					NiWith = messagesWith.getMatrix().get(j).size();
+					NiCountWith += NiWith;
+					if (NiWith != 0 )
+						HLa +=  (NiWith / this.getNL()) * ( Math.log(this.getNL()) - Math.log(NiWith) );
+				}
+				// CALCULATE H(Lb) - messagesWith
+				for (int j = 1; j <= messagesWithOut.getMatrix().size(); j++) {
+					NiWithOut = messagesWithOut.getMatrix().get(j).size();
+					NiCountWithOut += NiWithOut;
+					if (NiWithOut != 0)
+						HLb += (NiWithOut / this.getNL()) * (Math.log(this.getNL()) -Math.log(NiWithOut));
+				}
+
+
+				double Hx = 0;
+				Hx = (NiCountWith / this.getNL()) * HLa + (NiCountWithOut / this.getNL() ) * HLb;	
+				HxArray.add(Hx);
+
+
 			}
-			// CALCULATE H(Lb) - messagesWith
-			for (int j = 1; j <= messagesWithOut.getMatrix().size(); j++) {
-				NiWithOut = messagesWithOut.getMatrix().get(j).size();
-				NiCountWithOut += NiWithOut;
-				if (NiWithOut != 0)
-					HLb += (NiWithOut / this.getNL()) * (Math.log(this.getNL()) -Math.log(NiWithOut));
+			else{
+				HxArray.add(Double.POSITIVE_INFINITY);
 			}
-			
-			
-			double Hx = 0;
-			Hx = (NiCountWith / this.getNL()) * HLa + (NiCountWithOut / this.getNL() ) * HLb;	
-			HxArray.add(Hx);
-
-
 		}
 		double min = HxArray.get(0);
-	
-		int index = 1;
-		for (int j = 2; j < HxArray.size(); j++) {
+
+		int index = 0;
+		for (int j = 1; j < HxArray.size(); j++) {
 			if (HxArray.get(j) < min ){
 				min = HxArray.get(j);
 				index = j;
@@ -137,7 +144,6 @@ public class Node {
 		}
 		this.x = index;
 		this.setHx(min);
-		System.out.println("The x for the split is: " +x);
 	}
 
 
@@ -162,7 +168,7 @@ public class Node {
 					messagesWithOut.getMatrix().get(j).add(temp.getMatrix().get(j).get(i));
 			}
 		}
-		
+
 		return countWithAttr;
 	}
 
@@ -175,8 +181,8 @@ public class Node {
 			if (Ni != 0 )
 				entropy +=  (Ni / messages.sumAllMessages()) * ( Math.log(messages.sumAllMessages()) - Math.log(Ni) );
 		}
-	
-		 this.entropy = entropy;
+
+		this.entropy = entropy;
 	}
 
 
@@ -244,26 +250,26 @@ public class Node {
 		return this.x;
 	}
 
-	  public void print() {
-	        print("", true);
-	    }
+	public void print() {
+		print("", true);
+	}
 
-	    private void print(String prefix, boolean isTail) {
-	        System.out.println(prefix + (isTail ? "└── " : "├── ") + x);
-	     if (!isLeaf){
-	            leftChild.print(prefix + (isTail ? "    " : "│   "), false);
-	            rightChild.print(prefix + (isTail ? "    " : "│   "), false);
-	     }
-	   
-	    }
-
-		public void setInformationGain(double ig) {
-			this.informationGain = ig;
+	private void print(String prefix, boolean isTail) {
+		System.out.println(prefix + (isTail ? "└── " : "├── ") + x);
+		if (!isLeaf){
+			leftChild.print(prefix + (isTail ? "    " : "│   "), false);
+			rightChild.print(prefix + (isTail ? "    " : "│   "), false);
 		}
 
-		public double getInformationGain() {
-			return informationGain;
-		}
+	}
+
+	public void setInformationGain(double ig) {
+		this.informationGain = ig;
+	}
+
+	public double getInformationGain() {
+		return informationGain;
+	}
 
 
 

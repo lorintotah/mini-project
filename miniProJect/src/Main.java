@@ -2,6 +2,9 @@
 
 
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,7 +17,7 @@ public class Main {
 
 	final static int numOfFiles = 2;
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException{
 
 
 		int P = 20;
@@ -62,14 +65,15 @@ public class Main {
 		ArrayList<String> goodDict = new ArrayList<String>();
 
 		int SIZE = maxDict.size();
-		if (maxDict.size() > 10000)
-			SIZE = 10000;
 
+		if (maxDict.size() > 10000){
+			SIZE = 10000;
+		}
 		for (int j = 0; j < SIZE; j++) {
 			goodDict.add(maxDict.pollLast().getWord());
 		}
 
-		
+
 
 		for (int i: TRAINING_SET.keySet()){
 			for (int j = 0;j < TRAINING_SET.get(i).size(); j++){
@@ -79,18 +83,20 @@ public class Main {
 
 		Dictionary dict = new Dictionary();
 		dict.setDictionary(goodDict);
-		dict.print();
+
+		PrintWriter writer = new PrintWriter("/Users/Lorin/Downloads/projectdata/20newsgroups/dict.txt", "UTF-8");
+		for (int i=0 ; i< dict.getDictionary().size(); i++){
+
+			writer.println(i +" " +dict.getDictionary().get(i).toString());
+		}
 
 		Messages m = new Messages();
 		m.updateMatrix(TRAINING_SET, dict);
+
 		Messages validMSG = new Messages();
 		validMSG.updateMatrix(VALID_SET, dict);
 
-		//validMSG.print();
-		//System.out.println("=======DICTIONARY:======");
-		//System.out.println("===================:");
-
-
+		validMSG.print();
 		TreeSet<Node> nodes = new TreeSet<Node>(new MyComp());
 
 		//first Tree - 1 split
@@ -105,13 +111,18 @@ public class Main {
 		for (int t = (int) Math.pow(2, 0); t < Math.pow(2, L); t *= 2) {
 			DecisionTree newTree = new DecisionTree(Tree);
 			newTree.setTandStart(t);
+
 			Trees.add(newTree);
 			System.out.println(newTree.getNodes());
 			Tree = newTree;
 		}
 
 		for (int i = 0; i < Trees.size(); i++) {
+			System.out.println("============================");
 			Trees.get(i).getRoot().print();
+			System.out.println("============================");
+
+
 		}
 		ArrayList<ArrayList<Integer>> guessAnswers = new ArrayList<ArrayList<Integer>>();
 		ArrayList<Integer> arr = null ;
@@ -150,7 +161,10 @@ public class Main {
 			}
 			TheChoosenTree = Trees.get(index);
 		}
-
+		//		System.out.println("============================");
+		//		TheChoosenTree.getRoot().print();
+		//		System.out.println("============================");
+		//
 		Parser parserTest = new Parser();
 		String file2 = args[0]+"test.examples";
 		parserTest.parse(file2,1);

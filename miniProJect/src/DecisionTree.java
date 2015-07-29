@@ -31,7 +31,7 @@ public class DecisionTree {
 				this.TRAINING_SET.getMatrix().get(i).add(old.TRAINING_SET.getMatrix().get(i).get(j));
 		}
 		this.nodes = new TreeSet<Node>(new MyComp());
-// TODO: copy deep nodes
+		// TODO: copy deep nodes
 		this.root = new Node(old.root,nodes);
 	}
 
@@ -60,13 +60,8 @@ public class DecisionTree {
 			if (!getNodes().isEmpty())
 			{
 				checkNode = getNodes().pollLast();
-			}
-			if (checkNode != null){
 				splitByWord(checkNode);	
 			}
-			else 
-				return this;
-
 		}
 		return this;
 	}
@@ -88,9 +83,12 @@ public class DecisionTree {
 		Node LeftNode = new Node(AttrWithOutX,messagesWithOut);
 		Node RightNode = new Node(AttrWithOutX,messagesWith);
 
+		if (!(LeftNode.getMessages().size() == 0) || !(RightNode.getMessages().size() == 0)){
+			
 		double igL = (LeftNode.getEntropy() - LeftNode.getHx()) * LeftNode.getNL();
 		double igR = (RightNode.getEntropy() - RightNode.getHx()) * RightNode.getNL();
-	
+
+		
 		LeftNode.setInformationGain(igL);
 		RightNode.setInformationGain(igR);
 
@@ -103,11 +101,9 @@ public class DecisionTree {
 		if (igR != 0) {
 			getNodes().add(new Node(RightNode,new TreeSet<Node>(new MyComp())));
 		}
-		//System.out.println(getNodes().size());
 
-		System.out.println("Infor gain Left " +igL);
+		}
 
-		System.out.println("Infor gain Right " +igR);
 	}
 
 	public int checkWhichForum(LinkedHashSet<Integer> sentence){
