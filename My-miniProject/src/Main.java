@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.TreeSet;
 
+import miniProJect.Dictionary;
+import miniProJect.Messages;
+
 
 public class Main{
 
-	final static int numOfFiles = 4;
+	final static int numOfFiles = 2;
 
 
 	public static void main(String[] args){
@@ -34,14 +37,10 @@ public class Main{
 
 		}
 
-		//System.out.println("TRAINING " +TRAINING_SET);
-		System.out.println("VALID " +VALID_SET);
 		Dictionary dict = new Dictionary();
 		for (int i = 1; i <= numOfFiles; i++){
-
 			// All the messages related to the i'th forum
 			sentences = TRAINING_SET.get(i);
-
 			// Bag of words for every message (j) from the i'th forum
 			for (int j = 0; j < sentences.size(); j++){
 				BagOfWords bag = new BagOfWords();
@@ -50,7 +49,6 @@ public class Main{
 				dict.updateDictionary(bag);
 			}
 		}
-		System.out.println(dict.getDictionary().size());
 
 		for (int i: TRAINING_SET.keySet()){
 			for (int j = 0;j < TRAINING_SET.get(i).size(); j++){
@@ -64,24 +62,24 @@ public class Main{
 		TreeSet<Pair> nodes = new TreeSet<Pair>(new MyComp());
 		
 		//first Tree - 1 split
-		DecisionTree Tree = new DecisionTree(4,1,m,nodes);
+		DecisionTree Tree = new DecisionTree(numOfFiles,1,m,nodes,dict);
 		
 		//the trees array
 		ArrayList<DecisionTree> Trees = new ArrayList<DecisionTree>();
-		Trees.add(Tree.start(dict, m));
+		Trees.add(Tree);
 
 		int L = 3;
 
 		for (int t = (int) Math.pow(2, 0); t < Math.pow(2, L); t *= 2) {
-			System.out.println("t 1  " +t);
+			//System.out.println("t 1  " +t);
 			DecisionTree newTree = new DecisionTree(Tree, t);
 			newTree.routines();			
 			Trees.add(newTree);
-			System.out.println("t/2/   " +t);
+		//	System.out.println("t/2/   " +t);
 
 			Tree = newTree;
 
-			System.out.println("t 3  " +t);
+			//System.out.println("t 3  " +t);
 
 		}
 		dict.getDictionary().size();
@@ -110,7 +108,7 @@ public class Main{
 		}
 	
 		for (int i = 0; i < answers.size(); i++) {
-			System.out.println(answers.get(i).toString());
+		//	System.out.println(answers.get(i).toString());
 		}
 
 

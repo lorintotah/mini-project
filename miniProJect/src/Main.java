@@ -4,6 +4,7 @@
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.TreeSet;
 
@@ -11,11 +12,11 @@ import java.util.TreeSet;
 
 public class Main {
 
-	final static int numOfFiles = 4;
+	final static int numOfFiles = 2;
 
 	public static void main(String[] args){
-	
-		
+
+
 		int P = 20;
 		Parser parser = new Parser();
 		String file;
@@ -38,7 +39,7 @@ public class Main {
 
 		}
 
-		Dictionary dict = new Dictionary();
+		makeDict dict2 = new makeDict();
 		for (int i = 1; i <= numOfFiles; i++){
 			// All the messages related to the i'th forum
 			sentences = TRAINING_SET.get(i);
@@ -49,9 +50,26 @@ public class Main {
 				BagOfWords bag = new BagOfWords();
 				bag.createBagFromMessage(sentences.get(j).toString());
 				// Update the dictionary for the current message ( bag of words)
-				dict.updateDictionary(bag);
+				dict2.updateDictionary(bag);
 			}
+
+
 		}
+		TreeSet<Pair> maxDict = new  TreeSet<Pair>(new compForDict());
+		for (Pair pair : dict2.getDictionary()) {
+			maxDict.add(pair);
+		}
+		ArrayList<String> goodDict = new ArrayList<String>();
+
+		int SIZE = maxDict.size();
+		if (maxDict.size() > 10000)
+			SIZE = 10000;
+
+		for (int j = 0; j < SIZE; j++) {
+			goodDict.add(maxDict.pollLast().getWord());
+		}
+
+		
 
 		for (int i: TRAINING_SET.keySet()){
 			for (int j = 0;j < TRAINING_SET.get(i).size(); j++){
@@ -59,15 +77,17 @@ public class Main {
 			}
 		}
 
+		Dictionary dict = new Dictionary();
+		dict.setDictionary(goodDict);
+		dict.print();
+
 		Messages m = new Messages();
 		m.updateMatrix(TRAINING_SET, dict);
-		//	m.print();
 		Messages validMSG = new Messages();
 		validMSG.updateMatrix(VALID_SET, dict);
 
 		//validMSG.print();
 		//System.out.println("=======DICTIONARY:======");
-		//	dict.print();
 		//System.out.println("===================:");
 
 
@@ -157,15 +177,15 @@ public class Main {
 		parserLabel.parse(file3,1);
 		HashMap<Integer, ArrayList<String>> pl = parserLabel.getMessages();
 		System.out.println(pl);
-		
+
 		int count2=0;
 		for (int i = 0; i <pl.get(1).size(); i++) {
-				if (arr.get(i) == Integer.parseInt(pl.get(1).get(i)))
-					count2++;
-			}
+			if (arr.get(i) == Integer.parseInt(pl.get(1).get(i)))
+				count2++;
+		}
 		System.out.println(count2);
 	}
-	
+
 
 }
 

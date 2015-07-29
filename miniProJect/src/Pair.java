@@ -1,29 +1,25 @@
 
 public class Pair {
 
-	private Node node;
-	private double ig;
+	private String word;
+	private int numOfShows;
 	
-	public Pair(Node node, double ig){
-		this.node = node;
-		this.ig = ig;
+	public Pair(String word,int numOfShows){
+		this.word = word;
+		this.numOfShows = numOfShows;
 	}
-	public Pair(Pair n) {
-		this.node = new Node(n.getNode());
-		this.ig = n.getIg();
+
+	public String getWord() {
+		return word;
 	}
-	
-	public double getIg() {
-		return ig;
+	public void setWord(String word) {
+		this.word = word;
 	}
-	public void setIg(int ig) {
-		this.ig = ig;
+	public int getNumOfShows() {
+		return numOfShows;
 	}
-	public Node getNode() {
-		return node;
-	}
-	public void setNode(Node node) {
-		this.node = node;
+	public void setNumOfShows(int numOfShows) {
+		this.numOfShows = numOfShows;
 	}
 	
 }
