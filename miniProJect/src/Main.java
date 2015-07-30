@@ -28,9 +28,11 @@ public class Main {
 			file = args[0] +i+".train";
 			parser.parse(file,i);
 		}
+		System.out.println("Starting...........");
 		HashMap<Integer, ArrayList<String>> TRAINING_SET = parser.getMessages();
 		HashMap<Integer, ArrayList<String>> VALID_SET = new HashMap<Integer, ArrayList<String>>();
 
+		System.out.println("Choose " +P +"% Random Messages from TRAINING_SET to the VALID_SET");
 
 		for (int i = 1; i <= numOfFiles; i++) {
 			VALID_SET.put(i, new ArrayList<String>());
@@ -41,6 +43,7 @@ public class Main {
 			}
 
 		}
+		System.out.println("Build the dictionary...........");
 
 		makeDict dict2 = new makeDict();
 		for (int i = 1; i <= numOfFiles; i++){
@@ -82,6 +85,7 @@ public class Main {
 
 		Dictionary dict = new Dictionary();
 		dict.setDictionary(goodDict);
+		System.out.println("Dictionary is ready...........");
 
 
 		Messages m = new Messages();
@@ -93,6 +97,8 @@ public class Main {
 		TreeSet<Node> nodes = new TreeSet<Node>(new MyComp());
 
 		//first Tree - 1 split
+		System.out.println("Start with the FIRST tree...........");
+
 		DecisionTree Tree = new DecisionTree(numOfFiles,1,m,nodes);
 		Tree.start(dict);
 
@@ -102,6 +108,8 @@ public class Main {
 		int L = Integer.parseInt(args[3]);
 
 		for (int t = (int) Math.pow(2, 0); t < Math.pow(2, L); t *= 2) {
+			System.out.println("Making another tree...........");
+
 			DecisionTree newTree = new DecisionTree(Tree);
 			newTree.setTandStart(t);
 
@@ -167,10 +175,10 @@ public class Main {
 			}
 			countB[i]= count2;
 			System.out.println("==================== For -  " +i +" Tree ================== ");
-			System.out.println("============ Training Set ============ ");
-			System.out.println("============ Right Answers : " +count2 +" From:"+m.sumAllMessages());
-			System.out.println("============ In Precentage: " + (count2 / m.sumAllMessages()  )* 100+"%");
-			System.out.println("============ End Valid Set ========");
+			System.out.println("============ Training Set =========================== ");
+			System.out.println("============ Right Answers : " +count2 +" From:"+m.sumAllMessages() +"=========");
+			System.out.println("============ In Precentage: " + (count2 / m.sumAllMessages()  )* 100+"%======");
+			System.out.println("============ End Valid Set ==========================");
 
 			
 
