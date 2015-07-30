@@ -11,7 +11,7 @@ public class Node {
 	private double entropy; // h(x)
 	private boolean isLeaf; //
 	private int name;
-	private int NL;
+	private double NL;
 	private int x;
 	private double Hx;
 	private double informationGain;
@@ -46,20 +46,14 @@ public class Node {
 
 
 	public Node(ArrayList<Integer> Att,Messages msg) {
-		this.messages = new Messages();
-		for (int i = 1; i <= msg.getMatrix().size(); i++) {
-			this.messages.getMatrix().put(i, new ArrayList<LinkedHashSet<Integer>>());
-			for (int j = 0; j < msg.getMatrix().get(i).size(); j++) {
-				this.messages.getMatrix().get(i).add(msg.getMatrix().get(i).get(j));
-			}
-		}
+		this.messages = msg;
 		Attributes = Att;
 		this.setName(0);
 		setLeftChild(null);
 		setRightChild(null);
 		setLeaf(true);
-		calculateEntropyForLeaf();
 		this.setNL(messages.sumAllMessages());
+		calculateEntropyForLeaf();
 		calculateWhichXIsBest();
 	}
 
@@ -89,14 +83,13 @@ public class Node {
 
 	private void calculateWhichXIsBest() {
 		ArrayList<Double> HxArray = new ArrayList<Double>();
-
 		for (int i = 0; i < this.getAttr().size(); i++) {
 
 			Messages messagesWith = new Messages();
 			Messages messagesWithOut = new Messages();
 			this.NLa(this.getAttr().get(i),messagesWith, messagesWithOut);
 
-			if (messagesWith.size()!=0 || messagesWithOut.size()!=0 )
+			if (messagesWith.sumAllMessages()!=0 && messagesWithOut.sumAllMessages()!=0 )
 			{
 				double HLa = 0; //with
 				double HLb = 0; //without
@@ -104,28 +97,44 @@ public class Node {
 				double NiWith = 0;
 				double NiWithOut = 0;
 
-				double NiCountWith =0;
-				double NiCountWithOut = 0;
 				// CALCULATE H(La) - messagesWith
 
 				for (int j = 1; j <= messagesWith.getMatrix().size(); j++) {
 					NiWith = messagesWith.getMatrix().get(j).size();
-					NiCountWith += NiWith;
-					if (NiWith != 0 )
-						HLa +=  (NiWith / this.getNL()) * ( Math.log(this.getNL()) - Math.log(NiWith) );
+					if (NiWith != 0 && (NiWith!= 1) )
+						HLa +=  (NiWith / messagesWith.sumAllMessages()) * ( Math.log(messagesWith.sumAllMessages()) - Math.log(NiWith) );
 				}
+//				if (HLa==0)
+//					for (int j = 1; j <= messagesWith.getMatrix().size(); j++){ 
+//						NiWith = messagesWith.getMatrix().get(j).size();
+//						System.out.println("NiWith " +NiWith);
+//						System.out.println("messagesWith.sumAllMessages() "+messagesWith.sumAllMessages());
+//						System.out.println("( Math.log(messagesWith.sumAllMessages()) - Math.log(NiWith):" +( Math.log(messagesWith.sumAllMessages()) - Math.log(NiWith)));
+//						System.out.println(messagesWith.getMatrix().get(j));
+//					}
 				// CALCULATE H(Lb) - messagesWith
 				for (int j = 1; j <= messagesWithOut.getMatrix().size(); j++) {
 					NiWithOut = messagesWithOut.getMatrix().get(j).size();
-					NiCountWithOut += NiWithOut;
-					if (NiWithOut != 0)
-						HLb += (NiWithOut / this.getNL()) * (Math.log(this.getNL()) -Math.log(NiWithOut));
+					if (NiWithOut != 0 && (NiWithOut!= 1))
+						HLb += (NiWithOut / messagesWithOut.sumAllMessages()) * (Math.log(messagesWithOut.sumAllMessages()) -Math.log(NiWithOut));
 				}
 
+				
+				double Hxx = (messagesWith.sumAllMessages() / this.getMessages().sumAllMessages()) * HLa + (messagesWithOut.sumAllMessages() / this.getMessages().sumAllMessages()) * HLb;	
+//			
 
-				double Hx = 0;
-				Hx = (NiCountWith / this.getNL()) * HLa + (NiCountWithOut / this.getNL() ) * HLb;	
-				HxArray.add(Hx);
+//				System.out.println("(messagesWith.sumAllMessages() / this.getMessages().sumAllMessages()):"+(messagesWith.sumAllMessages() / this.getMessages().sumAllMessages()));
+//				System.out.println("(messagesWithOut.sumAllMessages() / this.getMessages().sumAllMessages()):" +(messagesWithOut.sumAllMessages() / this.getMessages().sumAllMessages()));
+//				System.out.println("============================");
+//				System.out.println("messagesWith.sumAllMessages():" +messagesWith.sumAllMessages());
+//				System.out.println("messagesWithOut.sumAllMessages():" +messagesWithOut.sumAllMessages());
+//				System.out.println("this.getMessages().sumAllMessages():" +this.getMessages().sumAllMessages());
+//				System.out.println("HLa: "+HLa);
+//				System.out.println("HLb: "+HLb);
+//				System.out.println("Hx:" +Hxx);
+//				System.out.println("============================");
+
+				HxArray.add(Hxx);
 
 
 			}
@@ -133,6 +142,7 @@ public class Node {
 				HxArray.add(Double.POSITIVE_INFINITY);
 			}
 		}
+
 		double min = HxArray.get(0);
 
 		int index = 0;
@@ -142,7 +152,7 @@ public class Node {
 				index = j;
 			}
 		}
-		this.x = index;
+		this.x = this.getAttr().get(index);
 		this.setHx(min);
 	}
 
@@ -178,9 +188,12 @@ public class Node {
 		double Ni = 0;
 		for (int i=1; i <= messages.getMatrix().size(); i++){
 			Ni = messages.getMatrix().get(i).size();
-			if (Ni != 0 )
+			if (Ni != 0 ){
 				entropy +=  (Ni / messages.sumAllMessages()) * ( Math.log(messages.sumAllMessages()) - Math.log(Ni) );
+			}
+
 		}
+
 
 		this.entropy = entropy;
 	}
@@ -218,12 +231,12 @@ public class Node {
 		return isLeaf;
 	}
 
-	public int getNL() {
+	public double getNL() {
 		return NL;
 	}
 
-	public void setNL(int nL) {
-		NL = nL;
+	public void setNL(double d) {
+		NL = d;
 	}
 
 	public double getHx() {

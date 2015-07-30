@@ -62,8 +62,8 @@ public class Messages {
 
 
 
-	public int sumAllMessages(){
-		int count = 0;
+	public double sumAllMessages(){
+		double count = 0;
 		for (int i = 1; i <= _workingSet.size(); i++) 
 		{
 			count += _workingSet.get(i).size();

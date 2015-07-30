@@ -61,8 +61,10 @@ public class DecisionTree {
 			{
 				checkNode = getNodes().pollLast();
 				splitByWord(checkNode);	
-			}
+			//	System.out.println("spliting ... "+checkNode.getX());
+				}
 		}
+
 		return this;
 	}
 
@@ -83,54 +85,48 @@ public class DecisionTree {
 		Node LeftNode = new Node(AttrWithOutX,messagesWithOut);
 		Node RightNode = new Node(AttrWithOutX,messagesWith);
 
-		if (!(LeftNode.getMessages().size() == 0) || !(RightNode.getMessages().size() == 0)){
-			
-		double igL = (LeftNode.getEntropy() - LeftNode.getHx()) * LeftNode.getNL();
-		double igR = (RightNode.getEntropy() - RightNode.getHx()) * RightNode.getNL();
+		double igL = (LeftNode.getEntropy() - LeftNode.getHx()) * LeftNode.getMessages().sumAllMessages();
+		double igR = (RightNode.getEntropy() - RightNode.getHx()) * RightNode.getMessages().sumAllMessages();
 
-		
 		LeftNode.setInformationGain(igL);
 		RightNode.setInformationGain(igR);
 
 		checkNode.setLeftChild(LeftNode);
 		checkNode.setRightChild(RightNode);
 
-		if (igL != 0) {
-			getNodes().add(new Node(LeftNode,new TreeSet<Node>(new MyComp())));
-		}
-		if (igR != 0) {
-			getNodes().add(new Node(RightNode,new TreeSet<Node>(new MyComp())));
-		}
 
-		}
+		getNodes().add(new Node(LeftNode,new TreeSet<Node>(new MyComp())));
+		getNodes().add(new Node(RightNode,new TreeSet<Node>(new MyComp())));
 
 	}
 
-	public int checkWhichForum(LinkedHashSet<Integer> sentence){
-		Node checkIt = root;
-		while (checkIt.isLeaf() == false)
-			if ( sentence.contains(checkIt.getX()) )
-				checkIt = checkIt.rightChild;
-			else
-				checkIt = checkIt.leftChild;
 
-		checkIt.chooseForum();
-		return checkIt.getName();
 
-	}
+public int checkWhichForum(LinkedHashSet<Integer> sentence){
+	Node checkIt = root;
+	while (checkIt.isLeaf() == false)
+		if ( sentence.contains(checkIt.getX()) )
+			checkIt = checkIt.rightChild;
+		else
+			checkIt = checkIt.leftChild;
 
-	public TreeSet<Node> getNodes() {
-		return nodes;
-	}
+	checkIt.chooseForum();
+	return checkIt.getName();
 
-	public void setNodes(TreeSet<Node> nodes) {
-		this.nodes = nodes;
-	}
+}
 
-	public void setTandStart(int t2) {
-		this.T = t2;
-		this.routines();
+public TreeSet<Node> getNodes() {
+	return nodes;
+}
 
-	}
+public void setNodes(TreeSet<Node> nodes) {
+	this.nodes = nodes;
+}
+
+public void setTandStart(int t2) {
+	this.T = t2;
+	this.routines();
+
+}
 }
 

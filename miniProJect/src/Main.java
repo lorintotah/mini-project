@@ -15,7 +15,7 @@ import java.util.TreeSet;
 
 public class Main {
 
-	final static int numOfFiles = 2;
+	final static int numOfFiles = 4;
 
 	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException{
 
@@ -83,7 +83,7 @@ public class Main {
 
 		Dictionary dict = new Dictionary();
 		dict.setDictionary(goodDict);
-
+		System.out.println("the dict is good" +dict.getDictionary().size());
 		PrintWriter writer = new PrintWriter("/Users/Lorin/Downloads/projectdata/20newsgroups/dict.txt", "UTF-8");
 		for (int i=0 ; i< dict.getDictionary().size(); i++){
 
@@ -96,7 +96,6 @@ public class Main {
 		Messages validMSG = new Messages();
 		validMSG.updateMatrix(VALID_SET, dict);
 
-		validMSG.print();
 		TreeSet<Node> nodes = new TreeSet<Node>(new MyComp());
 
 		//first Tree - 1 split
@@ -113,17 +112,17 @@ public class Main {
 			newTree.setTandStart(t);
 
 			Trees.add(newTree);
-			System.out.println(newTree.getNodes());
+		//	System.out.println(newTree.getNodes());
 			Tree = newTree;
 		}
 
-		for (int i = 0; i < Trees.size(); i++) {
-			System.out.println("============================");
-			Trees.get(i).getRoot().print();
-			System.out.println("============================");
-
-
-		}
+		//		for (int i = 0; i < Trees.size(); i++) {
+		//			System.out.println("============================");
+		//			Trees.get(i).getRoot().print();
+		//			System.out.println("============================");
+		//
+		//
+		//		}
 		ArrayList<ArrayList<Integer>> guessAnswers = new ArrayList<ArrayList<Integer>>();
 		ArrayList<Integer> arr = null ;
 
@@ -160,11 +159,13 @@ public class Main {
 				index = i;
 			}
 			TheChoosenTree = Trees.get(index);
+			System.out.println("The Valid answers " +max +"from :"+validMSG.sumAllMessages());
 		}
-		//		System.out.println("============================");
-		//		TheChoosenTree.getRoot().print();
-		//		System.out.println("============================");
-		//
+
+		System.out.println("============================");
+		TheChoosenTree.getRoot().print();
+		System.out.println("============================");
+
 		Parser parserTest = new Parser();
 		String file2 = args[0]+"test.examples";
 		parserTest.parse(file2,1);
