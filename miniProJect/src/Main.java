@@ -47,7 +47,6 @@ public class Main {
 			// All the messages related to the i'th forum
 			sentences = TRAINING_SET.get(i);
 			// Bag of words for every message (j) from the i'th forum
-			//System.out.println(sentences.size());
 
 			for (int j = 0; j < sentences.size(); j++){
 				BagOfWords bag = new BagOfWords();
@@ -111,33 +110,78 @@ public class Main {
 		}
 		PrintWriter writer = new PrintWriter(args[0]+args[4], "UTF-8");
 
-		ArrayList<ArrayList<Integer>> guessAnswers = new ArrayList<ArrayList<Integer>>();
+		ArrayList<ArrayList<ArrayList<Integer>>> guessAnswers = new ArrayList<ArrayList<ArrayList<Integer>>>();
+		ArrayList<ArrayList<ArrayList<Integer>>> TrainingGuess = new ArrayList<ArrayList<ArrayList<Integer>>>();
+
 		ArrayList<Integer> arr = null ;
+		ArrayList<Integer> TrainingArray = null ;
+
+		int[] countA = new int[Trees.size()];
+		int[] countB = new int[Trees.size()];
 
 		for (int k = 0; k < Trees.size(); k++) {
+
+			Tree = Trees.get(k);
+			guessAnswers.add(new ArrayList<ArrayList<Integer>>());
+
 			for (int j = 1; j <= validMSG.getMatrix().size(); j++) {
 				arr = new ArrayList<Integer>();
 				for (int t = 0; t < validMSG.getMatrix().get(j).size(); t++) {
 					arr.add(Tree.checkWhichForum(validMSG.getMatrix().get(j).get(t)));
+				}
+				guessAnswers.get(k).add(arr);
+			}
+		}
+		for (int k = 0; k < Trees.size(); k++) {
+			Tree = Trees.get(k);
+			TrainingGuess.add(new ArrayList<ArrayList<Integer>>());
 
+			for (int j = 1; j <= m.getMatrix().size(); j++) {
+				TrainingArray = new ArrayList<Integer>();
+				for (int t = 0; t < m.getMatrix().get(j).size(); t++) {
+					TrainingArray.add(Tree.checkWhichForum(m.getMatrix().get(j).get(t)));
+				}
+				TrainingGuess.get(k).add(TrainingArray);
+			}
+		}
+		// [[1,2,3,4][1,2,3,4]...[1,2,3,4]]
+		for (int i = 0; i < guessAnswers.size(); i++) {
+			int count=0;
+			for (int j = 0; j < guessAnswers.get(i).size(); j++) {
+				for (int j2 = 0; j2 < guessAnswers.get(i).get(j).size(); j2++) {
+					if (guessAnswers.get(i).get(j).get(j2) == j+1)
+					{
+						count++;
+					}
 				}
 			}
-			guessAnswers.add(arr);
-		}
 
-
-		//	System.out.println("THE TREE GUESS: " +answers);
-
-		int[] countA = new int[Trees.size()];
-		int count=0;
-		for (int i = 0; i < guessAnswers.size(); i++) {
-			for (int j = 0; j < guessAnswers.get(i).size(); j++) {
-				if (guessAnswers.get(i).get(j) == i+1)
-					count++;
-				//	System.out.println(count);
+			int count2=0;
+			for (int j = 0; j < TrainingGuess.get(i).size(); j++) {
+				for (int j2 = 0; j2 < TrainingGuess.get(i).get(j).size(); j2++) {
+					if (TrainingGuess.get(i).get(j).get(j2) == j+1)
+					{
+						count2++;
+					}
+				}
 			}
+			countB[i]= count2;
+			System.out.println("==================== For -  " +i +" Tree ================== ");
+			System.out.println("============ Training Set ============ ");
+			System.out.println("============ Right Answers : " +count2 +" From:"+m.sumAllMessages());
+			System.out.println("============ In Precentage: " + (count2 / m.sumAllMessages()  )* 100+"%");
+			System.out.println("============ End Valid Set ========");
+
+			
+
+			
 			countA[i]= count;
-		}
+			System.out.println("============ Valid Set ============ ");
+			System.out.println("============ Right Answers : " +count +" From:"+validMSG.sumAllMessages());
+			System.out.println("============ In Precentage: " + (count /validMSG.sumAllMessages() ) * 100+"%");
+			System.out.println("==================== End Training Set ===================");
+
+	}
 		int index = 0;
 		int max = 0;
 		DecisionTree TheChoosenTree= null;
@@ -146,12 +190,13 @@ public class Main {
 				max = countA[i];
 				index = i;
 			}
-			TheChoosenTree = Trees.get(index);
 		}
+			TheChoosenTree = Trees.get(index);
+			System.out.println("============ The Choosen T ========");
+			System.out.println("============ " +index +" ========");
+			System.out.println("===================================");
 
-		System.out.println("============================");
-		TheChoosenTree.getRoot().print();
-		System.out.println("============================");
+
 
 		Parser parserTest = new Parser();
 		String file2 = args[0]+args[1];
@@ -173,17 +218,24 @@ public class Main {
 			arr.add(TheChoosenTree.checkWhichForum(mTest.getMatrix().get(1).get(t)));
 
 		}
-		System.out.println(arr);
 		Parser parserLabel = new Parser();
 		String file3 = args[0]+"test.labels";
 		parserLabel.parse(file3,1);
 		HashMap<Integer, ArrayList<String>> pl = parserLabel.getMessages();
-		System.out.println(pl);
+		int count = 0;
 		for (int j = 0; j < arr.size(); j++) {
 			writer.println(arr.get(j));
+			if (arr.get(j) == Integer.parseInt(pl.get(1).get(j)))
+				count++;
 
 		}
+		System.out.println("============ Examples Set ============ ");
+		System.out.println("============ Right Answers : " +count +" From:"+mTest.sumAllMessages());
+		System.out.println("============ In Precentage: " + (count /mTest.sumAllMessages()  )* 100);
+		System.out.println("============ End Examples Set ========");
+		
 
-
+		writer.close();
 	}
 }
+
