@@ -200,8 +200,7 @@ public class Main {
 			}
 		}
 			TheChoosenTree = Trees.get(index);
-			System.out.println("============ The Choosen T ========");
-			System.out.println("============ " +index +" ========");
+			System.out.println("============ The Choosen T " +index +"========");
 			System.out.println("===================================");
 
 
