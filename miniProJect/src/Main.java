@@ -85,6 +85,12 @@ public class Main {
 
 		Dictionary dict = new Dictionary();
 		dict.setDictionary(goodDict);
+		
+		PrintWriter dictWrit = new PrintWriter(args[0]+"dict.txt", "UTF-8");
+		for (int i = 0; i < dict.getDictionary().size(); i++) {
+			dictWrit.print(dict.getDictionary().get(i));
+		}
+		dictWrit.close();
 		System.out.println("Dictionary is ready...........");
 
 
