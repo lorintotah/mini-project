@@ -3,7 +3,10 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-
+/**
+ This class's purpose is to save for each forum the set of words (indexes in the
+ dictionary) for each message in that forum  
+ */
 
 public class Messages {
 
@@ -15,36 +18,30 @@ public class Messages {
 
 	}
 
-	//	public int searchForword(int i){
-	//		int count = 0;
-	//		for (int j = 1; j < 5; j++){
-	//			if (_workingSet.get(j)._indexes.contains(i))
-	//				count++;
-	//		}
-	//		return count;
-	//	}
-
 	public HashMap<Integer, ArrayList<LinkedHashSet<Integer>>> getMatrix(){
 		return _workingSet;
 	}
-
-	//	public void insert(int i,int index){
-	//		_workingSet.get(i).get(index);
-	//	}
-	//
-	//	public LinkedHashSet<Integer> getSet(int index){
-	//		return _workingSet.get(index)._indexes;
-	//	}
 
 
 	public int size(){
 		return _workingSet.size();
 	}
+	
+	/**
+	 * Updating the corresponding matrix with a set of messages and dictionary
+	 * each message is examine by it words to see if they are in the dictionary
+	 * if so, the relevant index is added to the set, if not, nothing happens
+	 * @param messages
+	 * @param dict
+	 */
 	public void updateMatrix(HashMap<Integer, ArrayList<String>> messages, Dictionary dict){
 		int index;
+		//For each forum:
 		for (int i: messages.keySet()){
 			_workingSet.put(i, new ArrayList<LinkedHashSet<Integer>>());
+			//Iterating through the messages of the forum
 			for (int j = 0;j < messages.get(i).size(); j++){
+				//split the whole message into words
 				String[] curr = messages.get(i).get(j).toString().split(" +|,|'|!|$|>|<|>|\" |:|\\.|\\?|-|\\(|\\)");
 				LinkedHashSet<Integer> temp = new LinkedHashSet<>();
 				// For every word in the message find the corresponding entry in the dictionary 

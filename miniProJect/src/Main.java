@@ -20,7 +20,7 @@ public class Main {
 	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException{
 
 
-		int P = 20;
+		int P = Integer.parseInt(args[2]);
 		Parser parser = new Parser();
 		String file;
 		ArrayList<String> sentences = new ArrayList<String>();
@@ -83,12 +83,7 @@ public class Main {
 
 		Dictionary dict = new Dictionary();
 		dict.setDictionary(goodDict);
-		System.out.println("the dict is good" +dict.getDictionary().size());
-		PrintWriter writer = new PrintWriter("/Users/Lorin/Downloads/projectdata/20newsgroups/dict.txt", "UTF-8");
-		for (int i=0 ; i< dict.getDictionary().size(); i++){
 
-			writer.println(i +" " +dict.getDictionary().get(i).toString());
-		}
 
 		Messages m = new Messages();
 		m.updateMatrix(TRAINING_SET, dict);
@@ -105,24 +100,17 @@ public class Main {
 		ArrayList<DecisionTree> Trees = new ArrayList<DecisionTree>();
 		Trees.add(Tree);
 
-		int L = 7;
+		int L = Integer.parseInt(args[3]);
 
 		for (int t = (int) Math.pow(2, 0); t < Math.pow(2, L); t *= 2) {
 			DecisionTree newTree = new DecisionTree(Tree);
 			newTree.setTandStart(t);
 
 			Trees.add(newTree);
-		//	System.out.println(newTree.getNodes());
 			Tree = newTree;
 		}
+		PrintWriter writer = new PrintWriter(args[0]+args[4], "UTF-8");
 
-		//		for (int i = 0; i < Trees.size(); i++) {
-		//			System.out.println("============================");
-		//			Trees.get(i).getRoot().print();
-		//			System.out.println("============================");
-		//
-		//
-		//		}
 		ArrayList<ArrayList<Integer>> guessAnswers = new ArrayList<ArrayList<Integer>>();
 		ArrayList<Integer> arr = null ;
 
@@ -159,7 +147,6 @@ public class Main {
 				index = i;
 			}
 			TheChoosenTree = Trees.get(index);
-			System.out.println("The Valid answers " +max +"from :"+validMSG.sumAllMessages());
 		}
 
 		System.out.println("============================");
@@ -167,7 +154,7 @@ public class Main {
 		System.out.println("============================");
 
 		Parser parserTest = new Parser();
-		String file2 = args[0]+"test.examples";
+		String file2 = args[0]+args[1];
 		parserTest.parse(file2,1);
 		HashMap<Integer, ArrayList<String>> TEST_SET = parserTest.getMessages();
 
@@ -192,18 +179,11 @@ public class Main {
 		parserLabel.parse(file3,1);
 		HashMap<Integer, ArrayList<String>> pl = parserLabel.getMessages();
 		System.out.println(pl);
+		for (int j = 0; j < arr.size(); j++) {
+			writer.println(arr.get(j));
 
-		int count2=0;
-		for (int i = 0; i <pl.get(1).size(); i++) {
-			if (arr.get(i) == Integer.parseInt(pl.get(1).get(i)))
-				count2++;
 		}
-		System.out.println(count2);
+
+
 	}
-
-
 }
-
-
-
-
