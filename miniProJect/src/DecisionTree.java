@@ -11,19 +11,23 @@ public class DecisionTree {
 	private Messages TRAINING_SET;
 	private int T;
 	private TreeSet<Node> nodes = new TreeSet<Node>(new MyComp());
-
+	private int[] firstTen = new int[10];
+	private int Ten ;
 	public DecisionTree(int NUMBER_OF_FILES,int T,Messages TRAINING_SET,TreeSet<Node> nodes){
 		this.NUMBER_OF_FILES = NUMBER_OF_FILES;
 		this.T = T;
 		this.TRAINING_SET = TRAINING_SET;
 		this.nodes = nodes;
+		this.Ten = 0;
 
 	}
 
 	public DecisionTree(DecisionTree old){
 		this.NUMBER_OF_FILES = old.NUMBER_OF_FILES;
 		this.T = old.T;
+		this.Ten= old.Ten;
 		this.TRAINING_SET = new Messages();
+		this.firstTen = old.firstTen;
 		// We want to deep copy each element in TRAINING_SET
 		for (int i = 1; i <= old.TRAINING_SET.getMatrix().size(); i++) {
 			this.TRAINING_SET.getMatrix().put(i, new ArrayList<LinkedHashSet<Integer>>());
@@ -61,11 +65,22 @@ public class DecisionTree {
 			{
 				checkNode = getNodes().pollLast();
 				splitByWord(checkNode);	
-			//	System.out.println("spliting ... "+checkNode.getX());
+				if (Ten!=10)
+				{
+					firstTen[Ten] = checkNode.getX();
+					Ten++;
 				}
+				//	System.out.println("spliting ... "+checkNode.getX());
+			}
 		}
 
 		return this;
+	}
+
+	public void PrintFirstTen(){
+		for (int i = 0; i < firstTen.length; i++) {
+			System.out.println(firstTen[i]);
+		}
 	}
 
 	private void splitByWord(Node checkNode) {
@@ -102,31 +117,31 @@ public class DecisionTree {
 
 
 
-public int checkWhichForum(LinkedHashSet<Integer> sentence){
-	Node checkIt = root;
-	while (checkIt.isLeaf() == false)
-		if ( sentence.contains(checkIt.getX()) )
-			checkIt = checkIt.rightChild;
-		else
-			checkIt = checkIt.leftChild;
+	public int checkWhichForum(LinkedHashSet<Integer> sentence){
+		Node checkIt = root;
+		while (checkIt.isLeaf() == false)
+			if ( sentence.contains(checkIt.getX()) )
+				checkIt = checkIt.rightChild;
+			else
+				checkIt = checkIt.leftChild;
 
-	checkIt.chooseForum();
-	return checkIt.getName();
+		checkIt.chooseForum();
+		return checkIt.getName();
 
-}
+	}
 
-public TreeSet<Node> getNodes() {
-	return nodes;
-}
+	public TreeSet<Node> getNodes() {
+		return nodes;
+	}
 
-public void setNodes(TreeSet<Node> nodes) {
-	this.nodes = nodes;
-}
+	public void setNodes(TreeSet<Node> nodes) {
+		this.nodes = nodes;
+	}
 
-public void setTandStart(int t2) {
-	this.T = t2;
-	this.routines();
+	public void setTandStart(int t2) {
+		this.T = t2;
+		this.routines();
 
-}
+	}
 }
 

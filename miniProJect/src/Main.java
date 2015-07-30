@@ -201,6 +201,8 @@ public class Main {
 		}
 			TheChoosenTree = Trees.get(index);
 			System.out.println("============ The Choosen T " +index +"========");
+			System.out.println("============ The first 10 words choose:========");
+			TheChoosenTree.PrintFirstTen();
 			System.out.println("===================================");
 
 
